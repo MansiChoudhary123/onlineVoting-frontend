@@ -1,99 +1,95 @@
 import React, { useState, useEffect } from "react";
 import "../css/voting.css";
+import axios from "axios";
 import profile from "../images/profile.png";
-import { backendUrl } from "../backendUrl";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import NoDataComponent from "./NoDataComponent";
+import { backendUrl } from "./../backendUrl";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 export const Voting = () => {
-  const [selectedCandidate, setSelectedCandidate] = useState(0);
-  const [candidateList, setCandidateList] = useState([]);
+  const { id } = useParams();
   const navigate = useNavigate();
-  const url = backendUrl();
-  const updateSelectedCandidate = (id) => {
-    setSelectedCandidate(id);
-  };
-  const handleVote = async () => {
-    const email = localStorage.getItem("profile");
-    if (email) {
-      try {
-        // Make the API call to send the login data to the server
-        const response = await fetch(
-          `${url}/add/vote/${selectedCandidate}/${email}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.ok) {
-          toast.success("Your votes has been saved successfully");
-        } else {
-          toast.warn("Your are not Eligible for voting");
-        }
-      } catch (error) {
-        console.error("Some Error Occured:", error);
-      }
-    } else {
-      navigate("/login");
-    }
+  const [voterId, setVoterId] = useState(0);
+  const updateVoterId = (id) => {
+    setVoterId(id);
   };
   useEffect(() => {
-    async function getAllCandidateList() {
-      try {
-        // Make the API call to send the login data to the server
-        const response = await fetch(`${url}/get/candidates/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+    if (localStorage.getItem("ballot_login_as") != "user") {
+      navigate("/login");
+    }
+  }, []);
+  const url = backendUrl();
+  const [candidateList, setCandidates] = useState([]);
+  async function getCandidatesaList() {
+    try {
+      const response = await axios.get(`${url}/elections/${id}/candidates/`);
+      setCandidates(response.data);
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+  }
+  async function addVote() {
+    try {
+      const response = await axios.post(`${url}/votes/add`, {
+        voter_email_id: localStorage.getItem("ballot_profile"),
+        candidate: voterId,
+        election: id,
+      });
 
-        if (response.ok) {
-          // Login successful, perform any necessary actions (e.g., redirect)
-          const responseData = await response.json();
-          setCandidateList(responseData);
-        } else {
-          // Login failed, handle the error
-          console.error("Login failed:", response.status);
-        }
-      } catch (error) {
-        console.error("Error logging in:", error);
+      toast.success("Vote added successfully!");
+    } catch (error) {
+      if (error.response) {
+        toast.error(` ${error.response.data.error || error.response.status}`);
+      } else if (error.request) {
+        toast.error("No response from server");
+      } else {
+        toast.error("Error: " + error.message);
       }
     }
-    getAllCandidateList();
-  }, []);
+  }
+  useEffect(() => {
+    if (id) {
+      getCandidatesaList();
+    }
+  }, [id]);
+  if (candidateList.length == 0)
+    return (
+      <>
+        <NoDataComponent />
+      </>
+    );
   return (
     <div className="voting_body">
-      {candidateList.map((item, key) => {
-        return (
-          <div key={key} className="custom-card">
-            <div className="custom-card-body">
-              <div className="profile">
-                <img src={profile} alt="profile " />
-              </div>
-              <div className="detail">
-                <p id="big">{item.candidate_name}</p>
-                <p id="small">{item.candidate_party}</p>
-              </div>
-              <div
-                className={
-                  item.id == selectedCandidate
-                    ? "voting-button-active"
-                    : "voting-button"
-                }
-              >
-                <button onClick={() => updateSelectedCandidate(item.id)}>
-                  Vote
-                </button>
-              </div>
+      {candidateList.map((item) => (
+        <div className="custom-card">
+          <div className="custom-card-body">
+            <div className="profile">
+              <img
+                src={profile}
+                alt="profile"
+                style={{ borderRadius: "50%", height: "120px", width: "120px" }}
+              />
+            </div>
+            <div className="detail">
+              <p id="big">{item.name}</p>
+              <p id="small">{item.subinformation}</p>
+            </div>
+            <div
+              className={
+                voterId == item._id
+                  ? "voting-button voting-button-active"
+                  : "voting-button"
+              }
+            >
+              <button onClick={() => updateVoterId(item._id)}>Vote</button>
             </div>
           </div>
-        );
-      })}
+        </div>
+      ))}
+
       <center>
-        <button type="submit" id="subbtn" onClick={handleVote}>
+        <button type="submit" id="subbtn" onClick={addVote}>
           Confirm
         </button>
       </center>

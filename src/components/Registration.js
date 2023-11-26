@@ -10,13 +10,11 @@ export const Registration = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const url = backendUrl();
   const handleRegistration = async (e) => {
     e.preventDefault();
 
-    // Perform validation
     if (
       !fullName ||
       !email ||
@@ -33,43 +31,31 @@ export const Registration = () => {
       return;
     }
 
-    // Create the payload
     const payload = {
-      name: fullName,
+      full_name: fullName,
       email: email,
       age: age,
-      phone: phone,
+      phone_number: phone,
       password: password,
     };
 
     try {
-      // Make the API call to send the data to the server
-      const response = await fetch(
-        `${url}/register/user`, // Removed double slash after 'ballot'
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json", // Added content type header
-          },
-          body: JSON.stringify(payload), // Stringify payload
-        }
-      );
+      const response = await fetch(`${url}/register/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (response.ok) {
-        // Registration successful, perform any necessary actions (e.g., redirect)
         toast.success("Registration successful");
       } else {
-        // Registration failed, handle the error
         toast.error("Registration failed");
       }
     } catch (error) {
       toast.error("Registration failed");
     }
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
   };
 
   return (

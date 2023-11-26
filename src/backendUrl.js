@@ -1,3 +1,3 @@
 export const backendUrl = () => {
-  return "https://frail-button-colt.cyclic.cloud/ballot";
+  return "https://moose-tweed-jacket.cyclic.app/ballot";
 };

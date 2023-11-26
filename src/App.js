@@ -1,4 +1,4 @@
-import { Header } from "./components/Header";
+import { Header } from "./components/Common/Header";
 import { Home } from "./components/Home";
 import { Login } from "./components/Login";
 import { Profile } from "./components/Profile";
@@ -7,35 +7,35 @@ import { Result } from "./components/Result";
 import { Voting } from "./components/Voting";
 import AdminLogin from "./components/admin/AdminLogin";
 import AdminRegistration from "./components/admin/AdminRegistration";
-import ElectionList from "./components/admin/ElectionList";
-import ElectionComponent from "./components/admin/ElectionComponent";
+import ElectionList from "./components/Common/ElectionList";
 import { Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import NewElection from "./components/admin/NewElection";
+import ElectionDetails from "./components/admin/ElectionDetails";
+import MyElctionList from "./components/admin/MyElection";
 function App() {
   return (
     <div className="App">
       <Header />
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        closeOnClick
-        rtl={false}
-        theme="light"
-      />
+      <ToastContainer />
       <Routes>
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/result" element={<Result />} />
-        <Route path="/voting" element={<Voting />} />
+        <Route
+          path="/admin/election/details/:id"
+          element={<ElectionDetails />}
+        />
+        <Route path="/result/:id" element={<Result />} />
+        <Route path="/voting" element={<ElectionList />} />
+        <Route path="/election_voting/:id" element={<Voting />} />
         <Route path="/signup" element={<Registration />} />
         <Route path="/admin_login" element={<AdminLogin />} />
         <Route path="/admin_registration" element={<AdminRegistration />} />
         <Route path="/election_list" element={<ElectionList />} />
-        <Route path="/election_card" element={<ElectionComponent />} />
-        <Route path="/election_list/new_election" element={<NewElection />} />
+        <Route path="/new_election" element={<NewElection />} />
+        <Route path="/admin/electionList" element={<MyElctionList />} />
         <Route path="/" element={<Home />} />
       </Routes>
     </div>

@@ -10,10 +10,9 @@ export const Profile = () => {
   const [profileData, setProfileData] = useState({});
   useEffect(() => {
     async function getProfileData() {
-      const email = localStorage.getItem("profile");
+      const email = localStorage.getItem("ballot_profile");
       if (email) {
         try {
-          // Make the API call to send the login data to the server
           const response = await fetch(`${url}/profile/user/${email}`, {
             method: "GET",
             headers: {
@@ -22,11 +21,9 @@ export const Profile = () => {
           });
 
           if (response.ok) {
-            // Login successful, perform any necessary actions (e.g., redirect)
             const responseData = await response.json();
             setProfileData(responseData);
           } else {
-            // Login failed, handle the error
             console.error("Login failed:", response.status);
           }
         } catch (error) {
@@ -70,14 +67,14 @@ export const Profile = () => {
         <div className="pf_detail">
           <div className="form">
             <br />
-            Name:{profileData.name} <br />
+            Name:{profileData.full_name} <br />
             <br />
             Email :{profileData.email} <br />
             <br />
             Age : {profileData.age}
             <br />
             <br />
-            Phone No : {profileData.phone}
+            Phone No : {profileData.phone_number}
             <br />
             <br />
           </div>

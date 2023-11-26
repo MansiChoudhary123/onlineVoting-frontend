@@ -6,8 +6,8 @@ const ChartComponent = ({ data }) => {
     return null;
   }
 
-  const candidateNames = data.map((candidate) => candidate.candidate_name);
-  const candidateVotes = data.map((candidate) => candidate.votes);
+  const candidateNames = data.map((candidate) => candidate.name);
+  const candidateVotes = data.map((candidate) => candidate.voteCount);
 
   const barChartOptions = {
     xaxis: {

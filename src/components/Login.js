@@ -6,28 +6,25 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("mansi@user.com");
+  const [password, setPassword] = useState("test@123");
   const [errorMessage, setErrorMessage] = useState("");
   const url = backendUrl();
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Perform validation
     if (!email || !password) {
       setErrorMessage("Please fill in all the fields.");
       return;
     }
 
-    // Create the payload
     const payload = {
       email: email,
       password: password,
     };
 
     try {
-      // Make the API call to send the login data to the server
       const response = await fetch(`${url}/login/user`, {
         method: "POST",
         headers: {
@@ -37,11 +34,11 @@ export const Login = () => {
       });
 
       if (response.ok) {
-        // Login successful, perform any necessary actions (e.g., redirect)
         const responseData = await response.json();
         console.log(responseData);
         toast.success("Login successful");
-        localStorage.setItem("profile", email);
+        localStorage.setItem("ballot_profile", email);
+        localStorage.setItem("ballot_login_as", "user");
         localStorage.setItem("ballotToken", responseData.token);
         navigate("/");
       } else {
