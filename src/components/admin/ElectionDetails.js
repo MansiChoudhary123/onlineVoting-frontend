@@ -17,6 +17,14 @@ const ElectionDetails = () => {
   const handleCandidateSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (candidateName.length <= 5) {
+        toast.error("Name must contain alteast 5 characters");
+        return;
+      }
+      if (candidateSubInfo.length <= 5) {
+        toast.error("Please enter atleast 5 characters of the subinformation");
+        return;
+      }
       const response = await axios.post(`${url}/candidates/add/`, {
         name: candidateName,
         subinformation: String(candidateSubInfo),
@@ -70,7 +78,7 @@ const ElectionDetails = () => {
             <div className="card-text">
               <div className="info-row">
                 <p>
-                  <strong>ID:</strong> {electionData ? electionData.id : ""}
+                  <strong>ID:</strong> {electionData ? electionData._id : ""}
                 </p>
                 <p>
                   <strong>Generation Date:</strong>{" "}
@@ -90,7 +98,10 @@ const ElectionDetails = () => {
               <div className="info-row">
                 <p>
                   <strong>Status:</strong>{" "}
-                  {electionData ? electionData.status : ""}
+                  {electionData &&
+                  electionData.generation_date < electionData.expiry_date
+                    ? "Open"
+                    : "Closed"}
                 </p>
                 {electionData?.access_type !== "OPEN_FOR_ALL" && (
                   <p>

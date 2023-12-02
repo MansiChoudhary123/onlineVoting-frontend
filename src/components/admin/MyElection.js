@@ -7,22 +7,37 @@ import Card from "react-bootstrap/Card";
 import Nav from "react-bootstrap/Nav";
 import ElectionItem from "../Common/ElectionItem";
 import { useNavigate } from "react-router-dom";
-const MyElctionList = () => {
+import { Ellipsis } from "react-css-spinners"; // Ensure you have this spinner or a similar one installed
+
+const MyElectionList = () => {
   const url = backendUrl();
   const [electionList, setElectionList] = useState([]);
   const [activeTab, setActiveTab] = useState("active");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+
   useEffect(() => {
     async function fetchElections(admin_id) {
-      const response = await axios.get(`${url}/elections/admin/id/${admin_id}`);
-      setElectionList(response.data);
+      setLoading(true);
+      setError("");
+      try {
+        const response = await axios.get(
+          `${url}/elections/admin/id/${admin_id}`
+        );
+        setElectionList(response.data);
+      } catch (err) {
+        setError("Failed to load elections. Please try again later.");
+        console.error(err); // Log the error for debugging purposes
+      } finally {
+        setLoading(false);
+      }
     }
+
     let admin_id = localStorage.getItem("ballot_admin_id");
     if (admin_id) fetchElections(admin_id);
-    else {
-      navigate("/admin_login");
-    }
-  }, []);
+    else navigate("/admin_login");
+  }, [navigate]);
 
   const { openElection, closeElection } = useMemo(() => {
     let open = [];
@@ -40,6 +55,20 @@ const MyElctionList = () => {
     return { openElection: open, closeElection: close };
   }, [electionList]);
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
+      >
+        <Ellipsis size={80} color="#007bff" />
+      </div>
+    );
+  }
   return (
     <div>
       <Card>
@@ -79,4 +108,4 @@ const MyElctionList = () => {
   );
 };
 
-export default MyElctionList;
+export default MyElectionList;

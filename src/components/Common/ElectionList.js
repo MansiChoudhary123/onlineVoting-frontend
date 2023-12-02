@@ -4,16 +4,26 @@ import { backendUrl } from "../../backendUrl";
 import Card from "react-bootstrap/Card";
 import Nav from "react-bootstrap/Nav";
 import ElectionItem from "./ElectionItem";
+import { Ellipsis } from "react-css-spinners";
+import { toast } from "react-toastify";
 
 const ElectionList = () => {
   const url = backendUrl();
   const [electionList, setElectionList] = useState([]);
   const [activeTab, setActiveTab] = useState("active");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchElections() {
-      const response = await axios.get(`${url}/elections/list/all`);
-      setElectionList(response.data);
+      setLoading(true);
+      try {
+        const response = await axios.get(`${url}/elections/list/all`);
+        setElectionList(response.data);
+      } catch (error) {
+        toast.error("Error fetching elections: " + error.message);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchElections();
   }, []);
@@ -35,35 +45,50 @@ const ElectionList = () => {
   }, [electionList]);
 
   return (
-    <div>
-      <Card>
-        <Card.Header>
-          <Nav variant="pills" activeKey={activeTab}>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="active"
-                onClick={() => setActiveTab("active")}
-              >
-                Active ({openElection.length})
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="closed"
-                onClick={() => setActiveTab("closed")}
-              >
-                Closed ({closeElection.length})
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </Card.Header>
-        <Card.Body style={{ minHeight: "80vh" }}>
-          <ElectionItem
-            electionList={activeTab === "active" ? openElection : closeElection}
-            usedIn={"user"}
-          />
-        </Card.Body>
-      </Card>
+    <div style={{ position: "relative", minHeight: "80vh" }}>
+      {loading ? (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <Ellipsis size={80} color="black" />
+        </div>
+      ) : (
+        <Card>
+          <Card.Header>
+            <Nav variant="pills" activeKey={activeTab}>
+              <Nav.Item>
+                <Nav.Link
+                  eventKey="active"
+                  onClick={() => setActiveTab("active")}
+                >
+                  Active ({openElection.length})
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link
+                  eventKey="closed"
+                  onClick={() => setActiveTab("closed")}
+                >
+                  Closed ({closeElection.length})
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+          </Card.Header>
+          <Card.Body>
+            <ElectionItem
+              electionList={
+                activeTab === "active" ? openElection : closeElection
+              }
+              usedIn={"user"}
+            />
+          </Card.Body>
+        </Card>
+      )}
     </div>
   );
 };

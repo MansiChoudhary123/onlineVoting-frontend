@@ -15,6 +15,10 @@ function ElectionItem({ electionList, usedIn }) {
     setElectionItems(electionList);
   }, [electionList]);
   const handleShowModal = (access, id) => {
+    if (usedIn == "admin") {
+      navigate(`/admin/election/details/${id}`);
+      return;
+    }
     if (access === "OPEN_FOR_ALL") {
       if (isAdmin) navigate(`/admin/election/details/${id}`);
       else navigate(`/election_voting/${id}`);
@@ -68,6 +72,7 @@ function ElectionItem({ electionList, usedIn }) {
         show={modalShow}
         onHide={() => setModalShow(false)}
         id={modalId}
+        data={electionItems}
       />
     </>
   );

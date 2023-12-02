@@ -13,16 +13,21 @@ function ElectionModal(props) {
   const url = backendUrl();
 
   async function handleSubmit() {
-    try {
-      if (!props.id) return;
-      const response = await axios.post(`${url}/check/password/election`, {
-        password: key,
-        election_id: props.id,
-      });
-
+    if (!props.id) return;
+    var flag = false;
+    for (let i = 0; i < props.data.length; i++) {
+      console.log(props.data[i]._id, props.data[i].password, props.id, key);
+      if (props.data[i]._id == props.id) {
+        if (props.data[i].password == key) {
+          flag = true;
+          break;
+        }
+      }
+    }
+    if (flag) {
       toast.success("Password Varified!");
       navigate(`/election_voting/${props.id}`);
-    } catch (error) {
+    } else {
       toast.error(`Inccorect Password. Unable to Proceed`);
     }
   }

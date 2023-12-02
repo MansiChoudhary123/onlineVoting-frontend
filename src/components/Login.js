@@ -6,25 +6,31 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const Login = () => {
-  const [email, setEmail] = useState("mansi@user.com");
-  const [password, setPassword] = useState("test@123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const url = backendUrl();
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setErrorMessage("Please fill in all the fields.");
+    if (email.length < 8) {
+      setErrorMessage("Please enter valid email.");
       return;
     }
-
+    if (password.length < 5) {
+      setErrorMessage("Please enter valid password.");
+      return;
+    }
+    setErrorMessage("");
     const payload = {
       email: email,
       password: password,
     };
 
     try {
+      setLoading(true);
       const response = await fetch(`${url}/login/user`, {
         method: "POST",
         headers: {
@@ -43,10 +49,12 @@ export const Login = () => {
         navigate("/");
       } else {
         // Login failed, handle the error
-        toast.error("Login failed:", response.status);
+        toast.error("Enter valid email and password");
       }
     } catch (error) {
-      toast.error("Error logging in:", error);
+      toast.error("Enter valid email and password:");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,8 +95,13 @@ export const Login = () => {
                 />
               </div>
             </div>
+            <div style={{ color: "red" }}>{errorMessage}</div>
             <div className="button">
-              <input type="submit" name="signin" value="Login" />
+              <input
+                type="submit"
+                name="signin"
+                value={loading ? "Loging ...." : "Login"}
+              />
             </div>
           </form>
           {/* <!---------------------------- form ends here--------------------------------------------> */}

@@ -1,9 +1,12 @@
 import React from "react";
 import "../../css/voting_navbar.css";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 export const Header = () => {
   const navigate = useNavigate();
+
+  const userRole = localStorage.getItem("ballot_login_as");
+
   function logoutFunc() {
     localStorage.removeItem("ballot_login_as");
     localStorage.removeItem("ballot_admin_id");
@@ -11,6 +14,7 @@ export const Header = () => {
     localStorage.removeItem("ballot_profile");
     navigate("/login");
   }
+
   return (
     <div>
       <nav>
@@ -21,37 +25,33 @@ export const Header = () => {
         </label>
         <ul>
           <li>
-            <a href="/">
-              {" "}
-              <Link to="login">Login</Link>
-            </a>
+            <Link to="/login">Login</Link>
           </li>
           <li>
-            <a href="/">
-              {" "}
-              <Link to="admin_login">Admin</Link>
-            </a>
+            <Link to="/admin_login">Admin</Link>
           </li>
           <li>
-            <a href="/">
-              <Link to="/">Home</Link>
-            </a>
+            <Link to="/">Home</Link>
           </li>
+          {userRole !== "admin" && (
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+          )}
+          {userRole === "user" || !userRole ? (
+            <li>
+              <Link to="/voting">Voting Area</Link>
+            </li>
+          ) : null}
+          {userRole === "admin" ? (
+            <li>
+              <Link to="/admin/electionList">My Election</Link>
+            </li>
+          ) : null}
           <li>
-            <a href="/">
-              <Link to="profile">Profile </Link>
-            </a>
-          </li>
-          <li>
-            <a href="/">
-              <Link to="voting">Voting Area</Link>
-            </a>
-          </li>
-
-          <li>
-            <a href="/">
-              <span onClick={logoutFunc}>Logout </span>
-            </a>
+            <Link to={"/login"} onClick={logoutFunc}>
+              Logout
+            </Link>
           </li>
         </ul>
       </nav>

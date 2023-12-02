@@ -18,6 +18,22 @@ const ElectionForm = () => {
   const navigate = useNavigate();
   const sendFormDataToBackend = async () => {
     try {
+      if (formData.electionName <= 5) {
+        toast.error("Election name must be atleast 5 character long");
+        return;
+      }
+      if (formData.fromDate > formData.toDate) {
+        toast.error("Expiry date must be greater than generation day");
+        return;
+      }
+      if (!formData.fromDate || !formData.toDate) {
+        toast.error("Enter the dates please");
+        return;
+      }
+      if (formData.accessType == 0 && formData.electionPass.length < 5) {
+        toast.error("Password must be atleast 5 character long");
+        return;
+      }
       const electionData = {
         election_name: formData.electionName,
         generation_date: formData.fromDate,

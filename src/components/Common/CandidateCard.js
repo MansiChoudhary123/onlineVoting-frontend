@@ -27,6 +27,14 @@ const CandidateCard = ({ data, id, refresh }) => {
   const handleCandidateEdit = async (e) => {
     e.preventDefault();
     if (!candidateToEdit) return;
+    if (candidateName.length <= 5) {
+      toast.error("Name must contain alteast 5 characters");
+      return;
+    }
+    if (candidateSubInfo.length <= 5) {
+      toast.error("Please enter atleast 5 characters of the subinformation");
+      return;
+    }
     try {
       const response = await axios.patch(
         `${url}/candidates/edit/${candidateToEdit}`,
