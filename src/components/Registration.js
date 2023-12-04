@@ -81,7 +81,9 @@ export const Registration = () => {
         toast.success("Registration successful");
         navigate("/");
       } else {
-        toast.error("Registration failed");
+    const errorData = await response.json(); 
+    const errorMessage = errorData.message || "Registration failed"; 
+    toast.error(errorMessage);
       }
     } catch (error) {
       toast.error("Registration failed");
